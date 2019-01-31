@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, {Component} from 'react';
 import { Input, Popover, Button, Tooltip, List, Avatar } from 'antd';
 import getCaretCoordinates from 'textarea-caret';
+import * as PropTypes from 'prop-types';
 
 const { TextArea } = Input;
 
@@ -15,34 +15,24 @@ const base = {
   cursor: "pointer"
 }
 
-const data = [
-  {
-    title: 'User Name 1',
-  },
-  {
-    title: 'User Name 3',
-  },
-  {
-    title: 'User Name 4',
-  },
-  {
-    title: 'User Name 2',
-  },
-];
-
-
-class App extends Component {
-
+export default class PromptTextarea extends React.Component {
   state = {
     visible: false,
     popoverStyle:{},
     value: ""
   }
 
-  constructor(props) {
-    super(props);
-    this.myRef = React.createRef();
-  }
+  static propTypes = {
+    type: PropTypes.string,
+    shape: PropTypes.oneOf(ButtonShapes),
+    size: PropTypes.oneOf(ButtonSizes),
+    htmlType: PropTypes.oneOf(ButtonHTMLTypes),
+    onClick: PropTypes.func,
+    loading: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+    className: PropTypes.string,
+    icon: PropTypes.string,
+    block: PropTypes.bool,
+  };
 
   showList(v) {
     console.log("showList");
@@ -61,18 +51,10 @@ class App extends Component {
         left: caret.left
       }
     })
-
   }
 
   render() {
-    return (
-      <div className="App">
-        <header className="App-header" >
-          <p>fdsaufdsa</p>
-          <p>fdsaufdsa</p>
-          <p>fdsaufdsa</p>
-
-          <div style={{position:"relative"}}>
+    return <div style={{position:"relative"}}>
             <TextArea id="ref" 
               value={this.state.value}
               rows={4} onChange={e => {
@@ -105,10 +87,6 @@ class App extends Component {
               }
             </ul>
           </div>
-        </header>
-      </div>
-    );
+;
   }
 }
-
-export default App;
