@@ -19,31 +19,44 @@ export default class PromptTextarea extends React.Component {
   state = {
     visible: false,
     popoverStyle:{},
-    value: ""
+    value: "",
+    elementId: `input${Math.random()}`
   }
 
   static propTypes = {
-    type: PropTypes.string,
-    shape: PropTypes.oneOf(ButtonShapes),
-    size: PropTypes.oneOf(ButtonSizes),
-    htmlType: PropTypes.oneOf(ButtonHTMLTypes),
-    onClick: PropTypes.func,
+    onSelect: PropTypes.func,
+    onChange: PropTypes.func,
     loading: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
     className: PropTypes.string,
-    icon: PropTypes.string,
-    block: PropTypes.bool,
-  };
+    dataSource: PropTypes.array,
+    value: PropTypes.any
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    //console.log(props, state);
+    if ('value' in props) {
+      const { value } = props;
+      return {...state, value}
+    }
+    return state;
+  }
+
+  constructor(props) {
+    super(props);
+    this.ref = React.createRef();
+  }
+
+  getClassName() {
+    const { className } = this.props;
+    return className;
+  }
 
   showList(v) {
-    console.log("showList");
-    
-    //this.myRef.current.setSelectionRange(0, v.length);
-    const element = document.getElementById("ref");
-    // console.log(getCaretCoordinates)
+    // console.log("showList");
+    const element = document.getElementById(this.state.elementId);
     var caret = getCaretCoordinates(element, element.selectionEnd);
-
-    console.log(element.offsetHeight);
-    console.log('(top, left, height) = (%s, %s, %s)', caret.top, caret.left, element.height);
+    // console.log(element.offsetHeight);
+    // console.log('(top, left, height) = (%s, %s, %s)', caret.top, caret.left, element.height);
     this.setState({
       popoverStyle: {
         display: "block",
@@ -53,9 +66,49 @@ export default class PromptTextarea extends React.Component {
     })
   }
 
+  componentDidMount() {
+    const { value } = this.props;
+    this.setState({
+      value
+    });
+  }
+
+  renderSelectList() {
+    const { dataSource = [] } = this.props;
+
+    return <ul style={{...base, ...this.state.popoverStyle}}>
+      {
+        dataSource.map( (item, key) => 
+          <li key={key} onClick={() => {
+            const { popoverStyle, value } = this.state;
+            this.setState({
+              popoverStyle: {...popoverStyle, display: "none"}
+            })
+            const { onChange, onSelect } = this.props;
+            if (onSelect) {
+              onSelect(item);
+            }
+
+            const newText = `${value}${item.title} `;
+            if (onChange) {
+              onChange(newText);
+            } else {
+              const { value } = this.state;
+              this.setState({
+                value: newText
+              })
+            }
+            
+            this.ref.current.focus();
+          }}>{item.title}</li>)
+      }
+    </ul>
+  }
+
   render() {
     return <div style={{position:"relative"}}>
-            <TextArea id="ref" 
+            <TextArea ref={this.ref} 
+              id={this.state.elementId}
               value={this.state.value}
               rows={4} onChange={e => {
                 //console.log( e.target)
@@ -63,30 +116,17 @@ export default class PromptTextarea extends React.Component {
                 if (last === "@") {
                   this.showList(e.target.value);
                 }
-                this.setState({
-                  value: e.target.value
-                })
+                const { onChange } = this.props;
+                if (onChange) {
+                  onChange(e.target.value);
+                } else {
+                  this.setState({
+                    value: e.target.value
+                  })
+                }
               }}/>
             
-            <ul style={{...base, ...this.state.popoverStyle}}>
-              {
-                data.map( (item, key) => 
-                  <li key={key} onClick={() => {
-                    const { popoverStyle } = this.state;
-                    this.setState({
-                      popoverStyle: {...popoverStyle, display: "none"}
-                    })
-
-                    const { value } = this.state;
-                    this.setState({
-                      value: `${value}${item.title} `
-                    })
-                    const element = document.getElementById("ref");
-                    element.focus();
-                  }}>{item.title}</li>)
-              }
-            </ul>
+            {this.renderSelectList()}
           </div>
-;
   }
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import { Input, Popover, Button, Tooltip, List, Avatar } from 'antd';
 import getCaretCoordinates from 'textarea-caret';
+import PromptTextarea from './PromptTextarea'
 
 const { TextArea } = Input;
 
@@ -36,7 +37,8 @@ class App extends Component {
   state = {
     visible: false,
     popoverStyle:{},
-    value: ""
+    value: "",
+    v:""
   }
 
   constructor(props) {
@@ -61,7 +63,6 @@ class App extends Component {
         left: caret.left
       }
     })
-
   }
 
   render() {
@@ -72,7 +73,7 @@ class App extends Component {
           <p>fdsaufdsa</p>
           <p>fdsaufdsa</p>
 
-          <div style={{position:"relative"}}>
+          {/*<div style={{position:"relative"}}>
             <TextArea id="ref" 
               value={this.state.value}
               rows={4} onChange={e => {
@@ -104,7 +105,17 @@ class App extends Component {
                   }}>{item.title}</li>)
               }
             </ul>
-          </div>
+          </div>*/}
+
+          <PromptTextarea onSelect={item => console.log(item)}
+            dataSource={data}
+            onChange={v => {
+              this.setState({
+                v
+              })
+            }}
+            value={this.state.v} />
+            
         </header>
       </div>
     );
