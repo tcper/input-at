@@ -19,8 +19,7 @@ export default class PromptTextarea extends React.Component {
   state = {
     visible: false,
     popoverStyle:{},
-    value: "",
-    elementId: `input${Math.random()}`
+    value: ""
   }
 
   static propTypes = {
@@ -53,8 +52,9 @@ export default class PromptTextarea extends React.Component {
 
   showList(v) {
     // console.log("showList");
-    const element = document.getElementById(this.state.elementId);
-    var caret = getCaretCoordinates(element, element.selectionEnd);
+    // const element = document.getElementById(this.state.elementId);
+    const { textAreaRef } = this.ref.current;
+    var caret = getCaretCoordinates(textAreaRef, textAreaRef.selectionEnd);
     // console.log(element.offsetHeight);
     // console.log('(top, left, height) = (%s, %s, %s)', caret.top, caret.left, element.height);
     this.setState({
@@ -108,7 +108,6 @@ export default class PromptTextarea extends React.Component {
   render() {
     return <div style={{position:"relative"}}>
             <TextArea ref={this.ref} 
-              id={this.state.elementId}
               value={this.state.value}
               rows={4} onChange={e => {
                 //console.log( e.target)
